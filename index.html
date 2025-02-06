@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerador de Manifest.json</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-100 p-6">
+    <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-lg">
+        <h1 class="text-2xl font-bold mb-4">Gerador de Manifest.json</h1>
+        <form id="manifestForm" class="grid gap-4">
+            <input type="text" id="name" placeholder="Nome" class="p-2 border rounded">
+            <input type="text" id="short_name" placeholder="Nome Curto" class="p-2 border rounded">
+            <input type="text" id="description" placeholder="Descrição" class="p-2 border rounded">
+            <input type="text" id="start_url" placeholder="URL Inicial" class="p-2 border rounded">
+            
+            <label class="flex items-center gap-2">
+                <span>Cor do Tema:</span>
+                <input type="color" id="theme_color" class="p-2 border rounded">
+                <span id="theme_color_value" class="font-mono"></span>
+            </label>
+            
+            <label class="flex items-center gap-2">
+                <span>Cor de Fundo:</span>
+                <input type="color" id="background_color" class="p-2 border rounded">
+                <span id="background_color_value" class="font-mono"></span>
+            </label>
+            
+            <select id="display" class="p-2 border rounded">
+                <option value="standalone">Standalone</option>
+                <option value="fullscreen">Fullscreen</option>
+                <option value="minimal-ui">Minimal UI</option>
+                <option value="browser">Browser</option>
+            </select>
+            
+            <input type="file" id="icon" accept="image/*" class="p-2 border rounded">
+            <button type="button" onclick="generateManifest()" class="bg-blue-600 text-white p-2 rounded">Gerar Manifest</button>
+        </form>
+        <h2 class="text-xl font-semibold mt-4">Preview</h2>
+        <pre id="jsonPreview" class="bg-gray-200 p-4 rounded overflow-auto"></pre>
+        <button onclick="copyManifest()" class="bg-gray-600 text-white p-2 rounded mt-2">Copiar JSON</button>
+        <h2 class="text-xl font-semibold mt-4">Imagens Geradas</h2>
+        <div id="imageDownloads" class="grid gap-2 mt-2"></div>
+        <a id="downloadAll" class="bg-red-600 text-white p-2 rounded mt-2 hidden text-center">Baixar Todas</a>
+
+    </div>
+    <script>
+        document.getElementById('theme_color').addEventListener('input', function() {
+            document.getElementById('theme_color_value').textContent = this.value;
+        });
+        
+        document.getElementById('background_color').addEventListener('input', function() {
+            document.getElementById('background_color_value').textContent = this.value;
+        });
+        
+        function generateManifest() {
+    const manifest = {
+        name: document.getElementById('name').value,
+        short_name: document.getElementById('short_name').value,
+        description: document.getElementById('description').value,
+        start_url: document.getElementById('start_url').value,
+        theme_color: document.getElementById('theme_color').value,
+        background_color: document.getElementById('background_color').value,
+        display: document.getElementById('display').value,
+        icons: []
+    };
+
+    const fileInput = document.getElementById('icon');
+    const imageDownloads = document.getElementById('imageDownloads');
+    imageDownloads.innerHTML = "";
+    const downloadAllBtn = document.getElementById('downloadAll');
+    downloadAllBtn.classList.add("hidden");
+    let zip = new JSZip();
+
+    if (fileInput.files.length > 0) {
+        const file = fileInput.files[0];
+        const reader = new FileReader();
+        reader.onload = function(event) {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = function() {
+                const sizes = [48, 72, 96, 128, 192, 256, 384, 512];
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+
+                let processed = 0; // Contador para saber quando todas as imagens foram geradas
+
+                sizes.forEach(size => {
+                    canvas.width = size;
+                    canvas.height = size;
+                    ctx.clearRect(0, 0, size, size);
+                    ctx.drawImage(img, 0, 0, size, size);
+                    const dataUrl = canvas.toDataURL("image/png");
+
+                    manifest.icons.push({
+                        src: `icon-${size}x${size}.png`,
+                        sizes: `${size}x${size}`,
+                        type: "image/png"
+                    });
+
+                    const link = document.createElement('a');
+                    link.href = dataUrl;
+                    link.download = `icon-${size}x${size}.png`;
+                    link.textContent = `Baixar ${size}x${size}`;
+                    link.classList.add("bg-green-600", "text-white", "p-2", "rounded", "block", "text-center");
+                    imageDownloads.appendChild(link);
+
+                    zip.file(`icon-${size}x${size}.png`, dataUrl.split(',')[1], { base64: true });
+
+                    processed++;
+                    if (processed === sizes.length) {
+                        zip.file("manifest.json", JSON.stringify(manifest, null, 4));
+
+                        zip.generateAsync({ type: "blob" }).then(function(content) {
+                            const zipBlob = URL.createObjectURL(content);
+                            downloadAllBtn.href = zipBlob;
+                            downloadAllBtn.download = "icons_manifest.zip";
+                            downloadAllBtn.classList.remove("hidden");
+                        });
+                    }
+                });
+
+                document.getElementById('jsonPreview').textContent = JSON.stringify(manifest, null, 4);
+            };
+        };
+        reader.readAsDataURL(file);
+    } else {
+        document.getElementById('jsonPreview').textContent = JSON.stringify(manifest, null, 4);
+    }
+}
+
+
+        function copyManifest() {
+            const jsonText = document.getElementById('jsonPreview').textContent;
+            navigator.clipboard.writeText(jsonText).then(() => {
+                alert('Manifest copiado para a área de transferência!');
+            });
+        }
+    </script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+</body>
+</html>
