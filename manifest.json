@@ -2,7 +2,7 @@
     "name": "PWA - FACIL",
     "short_name": "PWA",
     "description": "gerador de json",
-    "start_url": "/PWA/",
+    "start_url": "/PWA-tutorial/",
     "theme_color": "#3940fe",
     "background_color": "#ffffff",
     "display": "fullscreen",
