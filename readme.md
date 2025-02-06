@@ -1,11 +1,19 @@
-## PWA TEMPLATE MÍNIMO
+# Instruções para Usar o Template de PWA
 
-Acesse este site:
+Para usar este template de PWA, siga os passos abaixo:
 
-[https://www.simicart.com/manifest-generator.html/](https://www.simicart.com/manifest-generator.html/)
+1. Entre no site: [https://luppi15.github.io/PWA-tutorial/](https://luppi15.github.io/PWA-tutorial/)
+2. Adicione as informações do seu manifest no formulário.
+3. Baixe as imagens e o arquivo `manifest.json` gerados.
+4. Baixe os arquivos `app.js` e `sw.js`.
+5. Coloque as imagens geradas, o `sw.js` e o `manifest.json` no mesmo diretório que o `index.html`.
+6. Adicione o seguinte script ao final da página no `body`:
+    ```html
+    <script src="app.js"></script>
+    ```
+7. Adicione o seguinte link no `head`:
+    ```html
+    <link rel="manifest" href="manifest.json">
+    ```
 
-Preencha os dados do seu app e baixe os arquivos de acordo com o ícone que enviar.
-
-Copie os arquivos da pasta `template` e modifique como precisar.
-
-Envie o seu app para um servidor https.
+Certifique-se de que todos os arquivos estejam no mesmo diretório para que o PWA funcione corretamente.

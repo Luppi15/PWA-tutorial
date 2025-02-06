@@ -1,11 +1,31 @@
-const CACHE_NAME = 'cache-v1';
+const CACHE_NAME = 'cache-v2'; // Atualize o nome do cache para forçar a atualização
 
 self.addEventListener('install', (event) => {
     event.waitUntil(
         caches.open(CACHE_NAME).then((cache) => {
             return cache.addAll([
                 // Adicione aqui os arquivos que deseja armazenar em cache
+                '/',
+                '/index.html',
+                '/app.js',
+                '/manifest.json',
+                // Adicione outros arquivos necessários
             ]);
+        })
+    );
+});
+
+self.addEventListener('activate', (event) => {
+    const cacheWhitelist = [CACHE_NAME];
+    event.waitUntil(
+        caches.keys().then((cacheNames) => {
+            return Promise.all(
+                cacheNames.map((cacheName) => {
+                    if (!cacheWhitelist.includes(cacheName)) {
+                        return caches.delete(cacheName); // Remove caches antigos
+                    }
+                })
+            );
         })
     );
 });
