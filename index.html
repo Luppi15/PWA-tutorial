@@ -6,62 +6,93 @@
     <title>Gerador de Manifest.json</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="manifest" href="manifest.json">
+    <script>
+        // Script para alternar entre tema claro e escuro
+        function toggleTheme() {
+            const html = document.documentElement;
+            if (html.classList.contains('dark')) {
+                html.classList.remove('dark');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Carregar tema salvo
+        document.addEventListener('DOMContentLoaded', () => {
+            if (localStorage.getItem('theme') === 'dark') {
+                document.documentElement.classList.add('dark');
+            }
+        });
+    </script>
 </head>
-<body class="bg-gray-100 p-6">
-    <div class="max-w-3xl mx-auto bg-white p-6 rounded-xl shadow-lg">
+<body class="bg-gray-100 dark:bg-gray-900 text-gray-900 dark:text-gray-100 p-6">
+    <div class="max-w-3xl mx-auto bg-white dark:bg-gray-800 p-6 rounded-xl shadow-lg">
         <h1 class="text-2xl font-bold mb-4">Gerador de Manifest.json</h1>
         
         <h2 class="text-xl font-semibold mt-4">Instruções</h2>
         <p class="mt-2">Para usar este template de PWA, siga os passos abaixo:</p>
         <ol class="list-decimal list-inside mt-2">
-            <li>Entre no site: <a href="https://luppi15.github.io/PWA-tutorial/" class="text-blue-600 underline">https://luppi15.github.io/PWA-tutorial/</a></li>
+            <li>Entre no site: <a href="https://luppi15.github.io/PWA-tutorial/" class="text-blue-600 dark:text-blue-400 underline">https://luppi15.github.io/PWA-tutorial/</a></li>
             <li>Adicione as informações do seu manifest no formulário.</li>
             <li>Baixe as imagens e o arquivo manifest.json gerados.</li>
             <li>Baixe os arquivos <code>app.js</code> e <code>sw.js</code>.</li>
             <li>Coloque as imagens geradas, o <code>sw.js</code> e o <code>manifest.json</code> no mesmo diretório que o <code>index.html</code>.</li>
             <li>Adicione o seguinte script ao final da página no <code>body</code>:
-                <pre class="bg-gray-200 p-2 rounded"><code>&lt;script src="app.js"&gt;&lt;/script&gt;</code></pre>
+                <pre class="bg-gray-200 dark:bg-gray-700 p-2 rounded"><code>&lt;script src="app.js"&gt;&lt;/script&gt;</code></pre>
             </li>
             <li>Adicione o seguinte link no <code>head</code>:
-                <pre class="bg-gray-200 p-2 rounded"><code>&lt;link rel="manifest" href="manifest.json"&gt;</code></pre>
+                <pre class="bg-gray-200 dark:bg-gray-700 p-2 rounded"><code>&lt;link rel="manifest" href="manifest.json"&gt;</code></pre>
             </li>
         </ol>
 
         <form id="manifestForm" class="grid gap-4 mt-4">
-            <input type="text" id="name" placeholder="Nome" class="p-2 border rounded">
-            <input type="text" id="short_name" placeholder="Nome Curto" class="p-2 border rounded">
-            <input type="text" id="description" placeholder="Descrição" class="p-2 border rounded">
-            <input type="text" id="start_url" placeholder="URL Inicial" class="p-2 border rounded">
+            <input type="text" id="name" placeholder="Nome" class="p-2 border rounded w-full dark:bg-gray-700 dark:border-gray-600">
+            <input type="text" id="short_name" placeholder="Nome Curto" class="p-2 border rounded w-full dark:bg-gray-700 dark:border-gray-600">
+            <input type="text" id="description" placeholder="Descrição" class="p-2 border rounded w-full dark:bg-gray-700 dark:border-gray-600">
+            <input type="text" id="start_url" placeholder="URL Inicial" class="p-2 border rounded w-full dark:bg-gray-700 dark:border-gray-600">
             
-            <label class="flex items-center gap-2">
+            <label class="flex flex-col sm:flex-row items-center gap-2">
                 <span>Cor do Tema:</span>
-                <input type="color" id="theme_color" class="p-2 border rounded">
+                <input type="color" id="theme_color" class="p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
                 <span id="theme_color_value" class="font-mono"></span>
             </label>
             
-            <label class="flex items-center gap-2">
+            <label class="flex flex-col sm:flex-row items-center gap-2">
                 <span>Cor de Fundo:</span>
-                <input type="color" id="background_color" class="p-2 border rounded">
+                <input type="color" id="background_color" class="p-2 border rounded dark:bg-gray-700 dark:border-gray-600">
                 <span id="background_color_value" class="font-mono"></span>
             </label>
             
-            <select id="display" class="p-2 border rounded">
+            <select id="display" class="p-2 border rounded w-full dark:bg-gray-700 dark:border-gray-600">
                 <option value="standalone">Standalone</option>
                 <option value="fullscreen">Fullscreen</option>
                 <option value="minimal-ui">Minimal UI</option>
                 <option value="browser">Browser</option>
             </select>
             
-            <input type="file" id="icon" accept="image/*" class="p-2 border rounded">
-            <button type="button" onclick="generateManifest()" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700">Gerar Manifest</button>
+            <div class="relative w-full">
+                <input type="file" id="icon" accept="image/*" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer">
+                <button type="button" onclick="document.getElementById('icon').click()" class="rounded-lg relative w-full h-10 cursor-pointer flex items-center border border-green-500 bg-green-500 group hover:bg-green-500 active:bg-green-500 active:border-green-500">
+                    <span class="text-gray-200 font-semibold ml-8 transform group-hover:translate-x-20 transition-all duration-300">Escolher Arquivo</span>
+                    <span class="absolute right-0 h-full w-10 rounded-lg bg-green-500 flex items-center justify-center transform group-hover:translate-x-0 group-hover:w-full transition-all duration-300">
+                        <svg class="svg w-8 text-white" fill="none" height="24" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg">
+                            <line x1="12" x2="12" y1="5" y2="19"></line>
+                            <line x1="5" x2="19" y1="12" y2="12"></line>
+                        </svg>
+                    </span>
+                </button>
+            </div>
+            
+            <button type="button" onclick="generateManifest()" class="bg-blue-600 text-white p-2 rounded hover:bg-blue-700 w-full">Gerar Manifest</button>
         </form>
         <h2 class="text-xl font-semibold mt-4">Preview</h2>
-        <pre id="jsonPreview" class="bg-gray-200 p-4 rounded overflow-auto"></pre>
+        <pre id="jsonPreview" class="bg-gray-200 dark:bg-gray-700 p-4 rounded overflow-auto"></pre>
         <button onclick="copyManifest()" class="bg-green-600 text-white p-2 rounded mt-2 hover:bg-green-700 w-full">Copiar JSON</button>
         <h2 class="text-xl font-semibold mt-4">Imagens Geradas</h2>
-        <div id="imageDownloads" class="grid gap-2 mt-2"></div>
-        <a id="downloadAll" class="bg-green-600 text-white p2 rounded block text-center hover:bg-green-700 hidden">Baixar Todas</a>
-
+        <div id="imageDownloads" class="grid gap-2 mt-2 pb-2 "></div>
+        <a id="downloadAll" class="bg-green-600 text-white p-2 rounded block text-center hover:bg-green-700 hidden">Baixar Tudo</a>
     </div>
     <script>
         document.getElementById('theme_color').addEventListener('input', function() {
